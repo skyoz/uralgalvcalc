@@ -1,236 +1,231 @@
+
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Калькулятор стоимости горячего цинкования</title>
-    <!-- Tailwind via CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-    <main class="w-full max-w-lg bg-white shadow-lg rounded-2xl p-6 space-y-6">
-      <h1 class="text-2xl font-semibold text-gray-800 text-center">
-        Калькулятор стоимости услуг
-      </h1>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Калькулятор стоимости горячего цинкования</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+<main class="w-full max-w-lg bg-white shadow-lg rounded-2xl p-6 space-y-6">
+  <h1 class="text-2xl font-semibold text-gray-800 text-center">
+    Калькулятор стоимости услуг
+  </h1>
 
-      <!-- Наименование продукции -->
-      <div class="space-y-2">
-        <label for="product" class="block text-sm font-medium text-gray-700"
-          >Наименование продукции</label
-        >
-        <select
-          id="product"
-          class="w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="" selected>Выберите продукцию</option>
-          <!-- Заполняется скриптом -->
-        </select>
-      </div>
+  <!-- Наименование продукции -->
+  <div class="space-y-2">
+    <label for="product" class="block text-sm font-medium text-gray-700">Наименование продукции</label>
+    <select id="product" class="w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <option value="" selected>Выберите продукцию</option>
+      <!-- заполняется скриптом -->
+    </select>
+  </div>
 
-      <!-- Количество тонн -->
-      <div class="space-y-2">
-        <label for="tons" class="block text-sm font-medium text-gray-700"
-          >Количество тонн</label
-        >
-        <input
-          type="number"
-          step="0.001"
-          min="0.001"
-          id="tons"
-          placeholder="0.000"
-          class="w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+  <!-- Количество тонн -->
+  <div class="space-y-2">
+    <label for="tons" class="block text-sm font-medium text-gray-700">Количество тонн</label>
+    <input type="number" step="0.001" min="0.001" id="tons" placeholder="0.000"
+           class="w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+  </div>
 
-      <!-- Включить НДС -->
-      <div class="flex items-center space-x-2">
-        <input
-          type="checkbox"
-          id="vatToggle"
-          class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-        />
-        <label for="vatToggle" class="text-sm text-gray-700 select-none"
-          >Включить НДС&nbsp;20%</label
-        >
-      </div>
+  <!-- НДС -->
+  <div class="flex items-center space-x-2">
+    <input type="checkbox" id="vatToggle" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"/>
+    <label for="vatToggle" class="text-sm text-gray-700 select-none">Включить НДС 20%</label>
+  </div>
 
-      <!-- Загрузить чертеж -->
-      <div class="space-y-2">
-        <label for="drawing" class="block text-sm font-medium text-gray-700"
-          >Загрузить чертеж (.jpg, .png, .bmp)</label
-        >
-        <input
-          type="file"
-          id="drawing"
-          accept=".jpg,.jpeg,.png,.bmp"
-          class="w-full text-sm text-gray-700"
-        />
-      </div>
+  <!-- Загрузить чертеж -->
+  <div class="space-y-2">
+    <label for="drawing" class="block text-sm font-medium text-gray-700">Загрузить чертеж (.jpg, .png, .bmp)</label>
+    <input type="file" id="drawing" accept=".jpg,.jpeg,.png,.bmp" class="w-full text-sm text-gray-700"/>
+  </div>
 
-      <!-- Итоговая стоимость -->
-      <div class="text-lg font-semibold text-center">
-        Итоговая стоимость:
-        <span id="result">0.00</span>
-        руб. <span id="vatSuffix" class="text-sm font-normal text-gray-600">(без НДС)</span>
-      </div>
+  <!-- Итог -->
+  <div class="text-lg font-semibold text-center">
+    Итоговая стоимость: <span id="result">0.00</span> руб.
+    <span id="vatSuffix" class="text-sm font-normal text-gray-600">(без НДС)</span>
+  </div>
 
-      <!-- Ошибки -->
-      <p id="error" class="text-center text-red-600 text-sm"></p>
+  <p id="error" class="text-center text-red-600 text-sm"></p>
 
-      <!-- Кнопка рассчитать -->
-      <button
-        id="calculate"
-        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition"
-      >
-        Рассчитать
-      </button>
-    </main>
+  <button id="calculate"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition">
+    Рассчитать
+  </button>
+</main>
 
-    <!-- Tesseract.js -->
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@2/dist/tesseract.min.js"></script>
+<script>
+// ---------- 1. Прайс ----------
+const pricelist = {
+  "Секция балки СБ (2,5 мм)": [
+    { range: [0, 99.999], price: 42400 },
+    { range: [100, 199.999], price: 41400 },
+    { range: [200, 299.999], price: 40400 },
+    { range: [300, 499.999], price: 39400 },
+    { range: [500, 799.999], price: 38400 },
+    { range: [800, Infinity], price: 36000 }
+  ],
+  "Опоры ЛЭП, металлоконструкции": [
+    { range: [0, 99.999], price: 34500 },
+    { range: [100, 199.999], price: 33500 },
+    { range: [200, 299.999], price: 32500 },
+    { range: [300, 499.999], price: 32000 },
+    { range: [500, 799.999], price: 31000 },
+    { range: [800, Infinity], price: 30500 }
+  ]
+  // TODO: добавить остальные позиции
+};
 
-    <script>
-      // ---- 1.  Данные прайса ----
-      const pricelist = {
-        "Секция балки СБ (2,5 мм)": [
-          { range: [0, 99.999], price: 42400 },
-          { range: [100, 199.999], price: 41400 },
-          { range: [200, 299.999], price: 40400 },
-          { range: [300, 499.999], price: 39400 },
-          { range: [500, 799.999], price: 38400 },
-          { range: [800, Infinity], price: 36000 },
-        ],
-        "Опоры ЛЭП, металлоконструкции": [
-          { range: [0, 99.999], price: 34500 },
-          { range: [100, 199.999], price: 33500 },
-          { range: [200, 299.999], price: 32500 },
-          { range: [300, 499.999], price: 32000 },
-          { range: [500, 799.999], price: 31000 },
-          { range: [800, Infinity], price: 30500 },
-        ],
-        // Добавьте остальные позиции
-      };
+// ---------- 2. Алиасы ----------
+const aliasMap = {
+  // Секции балок СБ
+  "СБ":"Секция балки СБ (2,5 мм)",
+  "СБ0":"Секция балки СБ (2,5 мм)",
+  "СБ-0":"Секция балки СБ (2,5 мм)",
+  "СБ1":"Секция балки СБ (2,5 мм)",
+  "СБ-1":"Секция балки СБ (2,5 мм)",
+  "СБ2":"Секция балки СБ (2,5 мм)",
+  "СБ-2":"Секция балки СБ (2,5 мм)",
+  "СБ3":"Секция балки СБ (2,5 мм)",
+  "СБ-3":"Секция балки СБ (2,5 мм)",
+  "СБ4":"Секция балки СБ (2,5 мм)",
+  "СБ-4":"Секция балки СБ (2,5 мм)",
+  "СБ5":"Секция балки СБ (2,5 мм)",
+  "СБ-5":"Секция балки СБ (2,5 мм)",
+  "СБК":"Секция балки СБ (2,5 мм)",
+  "СБР":"Секция балки СБ (2,5 мм)",
+  "СБУ":"Секция балки СБ (2,5 мм)",
+  "СБУП":"Секция балки СБ (2,5 мм)",
+  "СЕКЦИЯБАЛКИ":"Секция балки СБ (2,5 мм)",
+  "СЕКЦИЯБАЛКИСБ":"Секция балки СБ (2,5 мм)",
+  "СЕКЦИЯСБ":"Секция балки СБ (2,5 мм)",
+  "БАЛКАСБ":"Секция балки СБ (2,5 мм)",
+  // Опоры ЛЭП
+  "ЛЭП":"Опоры ЛЭП, металлоконструкции",
+  "ОПОРАЛЭП":"Опоры ЛЭП, металлоконструкции",
+  "ОПОРЫЛЭП":"Опоры ЛЭП, металлоконструкции",
+  "ВЛ":"Опоры ЛЭП, металлоконструкции",
+  "ОПОРАВЛ":"Опоры ЛЭП, металлоконструкции",
+  "ОПОРЫВЛ":"Опоры ЛЭП, металлоконструкции",
+  "ОПОРА":"Опоры ЛЭП, металлоконструкции",
+  "МЕТАЛЛОКОНСТРУКЦИЯ":"Опоры ЛЭП, металлоконструкции",
+  "МЕТАЛЛОКОНСТРУКЦИИ":"Опоры ЛЭП, металлоконструкции",
+  "МЕТКОН":"Опоры ЛЭП, металлоконструкции"
+};
 
-      // ---- 2.  Алиасы/синонимы для распознавания ----
-      const aliasMap = {
-        "СБ": "Секция балки СБ (2,5 мм)",
-        "СБ1": "Секция балки СБ (2,5 мм)",
-        "СБ-1": "Секция балки СБ (2,5 мм)",
-        "СЕКЦИЯБАЛКИ": "Секция балки СБ (2,5 мм)",
-        "P110": "Опоры ЛЭП, металлоконструкции",
-        "П110": "Опоры ЛЭП, металлоконструкции",
-        "ОПОРА": "Опоры ЛЭП, металлоконструкции"
-      };
+// ---------- 3. Заполнение списка ----------
+const productSelect = document.getElementById('product');
+Object.keys(pricelist).forEach(name=>{
+  const o=document.createElement('option');
+  o.value=name; o.textContent=name;
+  productSelect.appendChild(o);
+});
 
-      const VAT_RATE = 0.20; // 20 %
+// ---------- 4. Утилиты ----------
+const normalize = s => s.toUpperCase().replace(/[^A-ZА-Я0-9]/g,'');
 
-      // ---- 3.  Заполнение выпадашки ----
-      const productSelect = document.getElementById("product");
-      Object.keys(pricelist).forEach((name) => {
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        productSelect.appendChild(opt);
-      });
+// Левенштейн
+function levenshtein(a,b){
+  if(a === b) return 0;
+  const al=a.length, bl=b.length;
+  if(al===0) return bl;
+  if(bl===0) return al;
+  let v0=new Array(bl+1), v1=new Array(bl+1);
+  for(let i=0;i<=bl;i++) v0[i]=i;
+  for(let i=0;i<al;i++){
+    v1[0]=i+1;
+    for(let j=0;j<bl;j++){
+      const cost = a[i]===b[j] ? 0 : 1;
+      v1[j+1]=Math.min(v1[j]+1, v0[j+1]+1, v0[j]+cost);
+    }
+    [v0,v1]=[v1,v0];
+  }
+  return v0[bl];
+}
 
-      // ---- 4.  Слушатели ----
-      document.getElementById("calculate").addEventListener("click", calculateCost);
-      document.getElementById("tons").addEventListener("input", autoCalculate);
-      document.getElementById("product").addEventListener("change", autoCalculate);
-      document.getElementById("drawing").addEventListener("change", processDrawing);
-      document.getElementById("vatToggle").addEventListener("change", autoCalculate);
+function fuzzyIncludes(text, candidate){
+  if(text.includes(candidate)) return true;
+  const len=candidate.length;
+  for(let i=0;i<=text.length-len;i++){
+    const win=text.slice(i,i+len);
+    if(levenshtein(win,candidate)/len <= 0.25) return true;
+  }
+  return false;
+}
 
-      // ---- 5.  Вспомогательные функции ----
-      const normalize = (str) =>
-        str
-          .toUpperCase()
-          .replace(/[^A-ZА-Я0-9-]/g, "");
+function findProductMatch(raw){
+  const txt = normalize(raw);
+  for(const [alias,prod] of Object.entries(aliasMap)){
+    if(fuzzyIncludes(txt, normalize(alias))) return prod;
+  }
+  for(const prod of Object.keys(pricelist)){
+    if(fuzzyIncludes(txt, normalize(prod))) return prod;
+  }
+  return null;
+}
 
-      function findProductMatch(rawText) {
-        const txt = normalize(rawText);
-        // 5.1 Проверка по алиасам
-        for (const [alias, product] of Object.entries(aliasMap)) {
-          if (txt.includes(normalize(alias))) return product;
-        }
-        // 5.2 Прямое вхождение полного названия
-        for (const product of Object.keys(pricelist)) {
-          if (txt.includes(normalize(product))) return product;
-        }
-        return null;
+// ---------- 5. Расчёт ----------
+const VAT_RATE = 0.20;
+
+function calculateCost(){
+  const product = productSelect.value;
+  const tons = parseFloat(document.getElementById('tons').value);
+  const res = document.getElementById('result');
+  const vatSuf = document.getElementById('vatSuffix');
+  const err = document.getElementById('error');
+  const vat = document.getElementById('vatToggle').checked;
+
+  err.textContent='';
+  if(!product){err.textContent='Выберите наименование продукции'; return;}
+  if(!tons || tons<=0){err.textContent='Введите корректное количество тонн (>0)'; return;}
+  if(tons>10000){err.textContent='Количество тонн превышает 10 000 т'; return;}
+
+  const priceObj = pricelist[product].find(r=>tons>=r.range[0] && tons<=r.range[1]);
+  if(!priceObj){err.textContent='Диапазон не найден в прайсе'; return;}
+  let total = priceObj.price * tons;
+  if(vat){ total*=1+VAT_RATE; vatSuf.textContent='(с НДС)'; }
+  else { vatSuf.textContent='(без НДС)'; }
+  res.textContent = total.toFixed(2);
+}
+
+function autoCalc(){
+  const product = productSelect.value;
+  const tons = parseFloat(document.getElementById('tons').value);
+  if(product && tons>0) calculateCost();
+}
+
+// ---------- 6. OCR ----------
+function processDrawing(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const err = document.getElementById('error');
+  err.textContent='Распознавание...';
+  Tesseract.recognize(file,'rus+eng',{logger:()=>{}})
+    .then(({data:{text}})=>{
+      const match = findProductMatch(text);
+      if(match){
+        productSelect.value=match;
+        err.textContent='';
+        autoCalc();
+      }else{
+        err.textContent='Наименование не распознано, выберите вручную';
       }
+    })
+    .catch(er=>{
+      console.error(er);
+      err.textContent='Ошибка OCR.';
+    });
+}
 
-      function autoCalculate() {
-        const product = productSelect.value;
-        const tons = parseFloat(document.getElementById("tons").value);
-        if (product && tons > 0) calculateCost();
-      }
-
-      function calculateCost() {
-        const product = productSelect.value;
-        const tons = parseFloat(document.getElementById("tons").value);
-        const resultField = document.getElementById("result");
-        const vatSuffix = document.getElementById("vatSuffix");
-        const errorField = document.getElementById("error");
-        const vatIncluded = document.getElementById("vatToggle").checked;
-
-        errorField.textContent = "";
-        if (!product) {
-          errorField.textContent = "Выберите наименование продукции";
-          return;
-        }
-        if (!tons || tons <= 0) {
-          errorField.textContent = "Введите корректное количество тонн (>0)";
-          return;
-        }
-        if (tons > 10000) {
-          errorField.textContent = "Количество тонн превышает допустимое значение (10 000 т)";
-          return;
-        }
-
-        const pricing = pricelist[product];
-        const priceObj = pricing.find((r) => tons >= r.range[0] && tons <= r.range[1]);
-        if (!priceObj) {
-          errorField.textContent = "Диапазон не найден в прейскуранте";
-          return;
-        }
-        let total = priceObj.price * tons;
-        if (vatIncluded) {
-          total *= 1 + VAT_RATE;
-          vatSuffix.textContent = "(с НДС)";
-        } else {
-          vatSuffix.textContent = "(без НДС)";
-        }
-        resultField.textContent = total.toFixed(2);
-      }
-
-      // ---- 6.  OCR ----
-      function processDrawing(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const errorField = document.getElementById("error");
-        errorField.textContent = "Распознавание... Подождите.";
-
-        Tesseract.recognize(file, "rus+eng", {
-          logger: () => {},
-          // Можно сузить область символов:
-          // tessedit_char_whitelist: 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-'
-        })
-          .then(({ data: { text } }) => {
-            const productMatch = findProductMatch(text);
-            if (productMatch) {
-              productSelect.value = productMatch;
-              errorField.textContent = "";
-              autoCalculate();
-            } else {
-              errorField.textContent = "Наименование не распознано, выберите вручную";
-            }
-          })
-          .catch((err) => {
-            console.error(err);
-            errorField.textContent = "Ошибка OCR. Попробуйте другое изображение.";
-          });
-      }
-    </script>
-  </body>
+// ---------- 7. События ----------
+document.getElementById('calculate').addEventListener('click', calculateCost);
+document.getElementById('tons').addEventListener('input', autoCalc);
+productSelect.addEventListener('change', autoCalc);
+document.getElementById('vatToggle').addEventListener('change', autoCalc);
+document.getElementById('drawing').addEventListener('change', processDrawing);
+</script>
+</body>
 </html>
