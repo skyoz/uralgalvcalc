@@ -72,8 +72,7 @@
       <div class="text-lg font-semibold text-center">
         Итоговая стоимость:
         <span id="result">0.00</span>
-        руб.
-        <span id="vatSuffix" class="text-sm font-normal text-gray-600">(без НДС)</span>
+        руб. <span id="vatSuffix" class="text-sm font-normal text-gray-600">(без НДС)</span>
       </div>
 
       <!-- Ошибки -->
@@ -92,7 +91,7 @@
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2/dist/tesseract.min.js"></script>
 
     <script>
-      // ---- 4. Структура данных (Прейскурант) ----
+      // ---- 1.  Данные прайса ----
       const pricelist = {
         "Секция балки СБ (2,5 мм)": [
           { range: [0, 99.999], price: 42400 },
@@ -110,12 +109,23 @@
           { range: [500, 799.999], price: 31000 },
           { range: [800, Infinity], price: 30500 },
         ],
-        // TODO: добавить остальные позиции из прейскуранта
+        // Добавьте остальные позиции
+      };
+
+      // ---- 2.  Алиасы/синонимы для распознавания ----
+      const aliasMap = {
+        "СБ": "Секция балки СБ (2,5 мм)",
+        "СБ1": "Секция балки СБ (2,5 мм)",
+        "СБ-1": "Секция балки СБ (2,5 мм)",
+        "СЕКЦИЯБАЛКИ": "Секция балки СБ (2,5 мм)",
+        "P110": "Опоры ЛЭП, металлоконструкции",
+        "П110": "Опоры ЛЭП, металлоконструкции",
+        "ОПОРА": "Опоры ЛЭП, металлоконструкции"
       };
 
       const VAT_RATE = 0.20; // 20 %
 
-      // ---- 2.1 Заполнение выпадающего списка ----
+      // ---- 3.  Заполнение выпадашки ----
       const productSelect = document.getElementById("product");
       Object.keys(pricelist).forEach((name) => {
         const opt = document.createElement("option");
@@ -124,12 +134,31 @@
         productSelect.appendChild(opt);
       });
 
-      // ---- Слушатели ----
+      // ---- 4.  Слушатели ----
       document.getElementById("calculate").addEventListener("click", calculateCost);
       document.getElementById("tons").addEventListener("input", autoCalculate);
       document.getElementById("product").addEventListener("change", autoCalculate);
       document.getElementById("drawing").addEventListener("change", processDrawing);
       document.getElementById("vatToggle").addEventListener("change", autoCalculate);
+
+      // ---- 5.  Вспомогательные функции ----
+      const normalize = (str) =>
+        str
+          .toUpperCase()
+          .replace(/[^A-ZА-Я0-9-]/g, "");
+
+      function findProductMatch(rawText) {
+        const txt = normalize(rawText);
+        // 5.1 Проверка по алиасам
+        for (const [alias, product] of Object.entries(aliasMap)) {
+          if (txt.includes(normalize(alias))) return product;
+        }
+        // 5.2 Прямое вхождение полного названия
+        for (const product of Object.keys(pricelist)) {
+          if (txt.includes(normalize(product))) return product;
+        }
+        return null;
+      }
 
       function autoCalculate() {
         const product = productSelect.value;
@@ -175,25 +204,26 @@
         resultField.textContent = total.toFixed(2);
       }
 
-      // ---- 6.2 Обработка чертежа (OCR) ----
+      // ---- 6.  OCR ----
       function processDrawing(event) {
         const file = event.target.files[0];
         if (!file) return;
         const errorField = document.getElementById("error");
         errorField.textContent = "Распознавание... Подождите.";
 
-        Tesseract.recognize(file, "rus+eng", { logger: () => {} })
+        Tesseract.recognize(file, "rus+eng", {
+          logger: () => {},
+          // Можно сузить область символов:
+          // tessedit_char_whitelist: 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-'
+        })
           .then(({ data: { text } }) => {
-            const productMatch = Object.keys(pricelist).find((p) =>
-              text.includes(p)
-            );
+            const productMatch = findProductMatch(text);
             if (productMatch) {
               productSelect.value = productMatch;
               errorField.textContent = "";
               autoCalculate();
             } else {
-              errorField.textContent =
-                "Наименование не распознано, выберите вручную";
+              errorField.textContent = "Наименование не распознано, выберите вручную";
             }
           })
           .catch((err) => {
